@@ -216,7 +216,31 @@
      			"VpcId" : { "Ref" : "VPC" },
      			"InternetGatewayId" : { "Ref" : "IGW" }
      	     }
-     	  }
+     	  },
+        "RouteTable" : {
+                 "Type" : "AWS::EC2::RouteTable",
+                 "DependsOn" : "IGW",
+                 "Properties" : {
+                       "VpcId" : { "Ref": "VPC" }
+                 }
+         },
+        "Route" : {
+                "Type" : "AWS::EC2::Route",
+                "DependsOn" : "IGW",
+                  "Properties" : {
+                    "DestinationCidrBlock" : "0.0.0.0/0",
+                    "GatewayId" : { "Ref": "IGW" },
+                    "RouteTableId" : { "Ref": "RouteTable" }
+                }
+         },
+        "RouteTableAssoc" : {
+                 "Type" : "AWS::EC2::SubnetRouteTableAssociation",
+                 "DependsOn" : "Subnet",
+                 "Properties" : {
+                   "SubnetId" : { "Ref" : "Subnet" },
+                   "RouteTableId" : { "Ref" : "RouteTable" }
+                 }
+         }
 
       }
     }
