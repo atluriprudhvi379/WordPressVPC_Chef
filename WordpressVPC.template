@@ -187,10 +187,37 @@
       },
 
   "Resources" : {
+    "VPC" : {
+          "Type" : "AWS::EC2::VPC",
+          "Properties" : {
+            "CidrBlock" : "10.0.0.0/16",
+            "Tags" : [ {"Key" : "Application", "Value" : { "Ref" : "AWS::StackId"} } ]
+          }
+        },
+    "Subnet" : {
+          "Type" : "AWS::EC2::Subnet",
+          "DependsOn" : "VPC",
+          "Properties" : {
+            "VpcId" : { "Ref" : "VPC" },
+            "CidrBlock" : "10.0.0.0/24",
+            "Tags" : [ {"Key" : "Application", "Value" : { "Ref" : "AWS::StackId"} } ]
+          }
+        },
+    "IGW" : {
+             "Type" : "AWS::EC2::InternetGateway",
+             "Properties" : {
+                "Tags" : [ {"Key" : "Owner", "Value" : "arun.sanna"}]
+             }
+          },
+     "IGWAttachment" : {
+     	     "Type" : "AWS::EC2::VPCGatewayAttachment",
+     	     "DependsOn" : "IGW",
+     	     "Properties" : {
+     			"VpcId" : { "Ref" : "VPC" },
+     			"InternetGatewayId" : { "Ref" : "IGW" }
+     	     }
+     	  }
 
-  },
-    "Outputs" : {
-      
-    }
+      }
     }
   }
