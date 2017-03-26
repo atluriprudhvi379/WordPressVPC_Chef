@@ -240,7 +240,34 @@
                    "SubnetId" : { "Ref" : "Subnet" },
                    "RouteTableId" : { "Ref" : "RouteTable" }
                  }
-         }
+         },
+         "WebServerSecurityGroup" : {
+               "Type" : "AWS::EC2::SecurityGroup",
+               "Properties" : {
+                 "GroupDescription" : "Enable HTTP access via port 80 locked down to the load balancer + SSH access",
+                 "VpcId" : { "Ref" : "VPC" },
+                 "SecurityGroupIngress" : [
+                   {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "10.0.0.0/16"},
+                   {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation"}},
+                   {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : { "Ref" : "SSHLocation"}}
+                 ]
+               }
+             },
+         "WebServer": {
+               "Type" : "AWS::EC2::Instance",
+               "Properties": {
+                       "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
+                                         { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+                       "InstanceType"   : { "Ref" : "InstanceType" },
+                       "NetworkInterfaces": [ {
+                             "AssociatePublicIpAddress": "true",
+                             "DeviceIndex": "0",
+                             "GroupSet": [{ "Ref" : "WebServerSecurityGroup" }],
+                             "SubnetId": { "Ref" : "Subnet" }
+                             } ],
+                        "KeyName" : { "Ref": "KeyName" }
+
+                      }
 
       }
     }
