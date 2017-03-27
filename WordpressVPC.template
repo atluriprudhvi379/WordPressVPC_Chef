@@ -31,7 +31,7 @@
          "MinLength": "1",
          "MaxLength": "64",
          "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
-         "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+         "ConstraintDescription" : "Must begin with a letter and contain only alphanumeric characters."
        },
    "DBUser" : {
          "NoEcho": "true",
@@ -40,19 +40,19 @@
          "MinLength": "1",
          "MaxLength": "16",
          "AllowedPattern" : "[a-zA-Z][a-zA-Z0-9]*",
-         "ConstraintDescription" : "must begin with a letter and contain only alphanumeric characters."
+         "ConstraintDescription" : "Must begin with a letter and contain only alphanumeric characters."
        },
    "DBPassword" : {
          "NoEcho": "true",
-         "Description" : "The WordPress database admin account password",
+         "Description" : "WordPress database admin account password",
          "Type": "String",
-         "ConstraintDescription" : "must contain only alphanumeric characters."
+         "ConstraintDescription" : "Must contain only alphanumeric characters."
        },
    "DBRootPassword" : {
          "NoEcho": "true",
          "Description" : "MySQL root password",
          "Type": "String",
-         "ConstraintDescription" : "must contain only alphanumeric characters."
+         "ConstraintDescription" : "Must contain only alphanumeric characters."
        }
      },
    "Mappings" : {
@@ -132,7 +132,7 @@
     "WebServerSecurityGroup" : {
           "Type" : "AWS::EC2::SecurityGroup",
           "Properties" : {
-            "GroupDescription" : "Enable HTTP access via port 80 locked down to the load balancer + SSH access",
+            "GroupDescription" : "Enable HTTP access via port 80 locked down to the load balancer + SSH access +HTTPS access",
             "VpcId" : { "Ref" : "VPC" },
             "SecurityGroupIngress" : [
               {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "10.0.0.0/16"},
@@ -146,7 +146,11 @@
           "Type" : "AWS::EC2::Instance",
           "Properties": {
                   "ImageId" : { "Fn::FindInMap" : [ "AWSRegionArch2AMI", { "Ref" : "AWS::Region" },
-                                    { "Fn::FindInMap" : [ "AWSInstanceType2Arch", { "Ref" : "InstanceType" }, "Arch" ] } ] },
+                                    { "Fn::FindInMap" :
+                                      [ "AWSInstanceType2Arch", {
+                                                  "Ref" : "InstanceType" },
+                                                  "Arch" ] }
+                                       ] },
                   "InstanceType"   : { "Ref" : "InstanceType" },
                   "NetworkInterfaces": [ {
                         "AssociatePublicIpAddress": "true",
@@ -161,9 +165,6 @@
                                  "",
                                  [
                                    "#!/bin/bash\n",
-                                   "\n",
-                                   "set -e\n",
-                                   "\n",
                                    "apt-get -y update\n",
                                    "\n",
                                    "# Install general dependencies that are needed before Chef is bootstrapped\n",
