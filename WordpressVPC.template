@@ -217,5 +217,11 @@
                     ]
                   }
           }
-    }
+    },
+    "Outputs" : {
+          "WebsiteURL" : {
+          "Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "WebServer", "PublicIp" ]}]]},
+          "Description" : "WordPress website"
+}
+  }
   }
