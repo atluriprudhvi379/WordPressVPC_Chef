@@ -1,32 +1,32 @@
 {
   "AWSTemplateFormatVersion" : "2010-09-09",
 
-  "Description" : "Aws Word Press Chef Template",
+  "Description" : "Automating wordpress installation using Cloudforation and Chef",
   "Parameters" : {
    "KeyName": {
          "Description" : "Name of an existing EC2 KeyPair to enable SSH access to the instances",
          "Type": "AWS::EC2::KeyPair::KeyName",
-         "ConstraintDescription" : "must be the name of an existing EC2 KeyPair."
+         "ConstraintDescription" : "It must be a valid and the name of an existing EC2 KeyPair."
        },
    "InstanceType" : {
           "Description" : "WebServer EC2 instance type",
           "Type" : "String",
-          "Default" : "t2.small",
+          "Default" : "t2.micro",
           "AllowedValues" : [ "t1.micro", "t2.micro", "t2.small", "t2.medium"],
-          "ConstraintDescription" : "must be a valid EC2 instance type."
+          "ConstraintDescription" : "It must be a valid EC2 instance type."
         },
    "SSHLocation": {
-         "Description": "Ip Address of the you work stations",
+         "Description": "IP Address of your workstation",
          "Type": "String",
          "MinLength": "9",
          "MaxLength": "18",
          "Default": "0.0.0.0/0",
          "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
-         "ConstraintDescription": "must be a valid IP CIDR range of the form x.x.x.x/x."
+         "ConstraintDescription": "This must be a valid IP CIDR range of the form x.x.x.x/x."
        },
    "DBName" : {
          "Default": "wordpress",
-         "Description" : "The WordPress database name",
+         "Description" : "WordPress Database Name",
          "Type": "String",
          "MinLength": "1",
          "MaxLength": "64",
@@ -35,7 +35,7 @@
        },
    "DBUser" : {
          "NoEcho": "true",
-         "Description" : "The WordPress database admin account username",
+         "Description" : "WordPress database admin account username",
          "Type": "String",
          "MinLength": "1",
          "MaxLength": "16",
@@ -94,7 +94,7 @@
     "IGW" : {
              "Type" : "AWS::EC2::InternetGateway",
              "Properties" : {
-                "Tags" : [ {"Key" : "Owner", "Value" : "arun.sanna"}]
+                "Tags" : [ {"Key" : "Owner", "Value" : "prudhvi.atluri"}]
              }
           },
      "IGWAttachment" : {
@@ -137,7 +137,8 @@
             "SecurityGroupIngress" : [
               {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : "10.0.0.0/16"},
               {"IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation"}},
-              {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : { "Ref" : "SSHLocation"}}
+              {"IpProtocol" : "tcp", "FromPort" : "80", "ToPort" : "80", "CidrIp" : { "Ref" : "SSHLocation"}},
+              {"IpProtocol" : "tcp", "FromPort" : "443", "ToPort" : "443", "CidrIp" : { "Ref" : "SSHLocation"}}
             ]
           }
         },
@@ -173,6 +174,7 @@
                                    "\n",
                                    "mkdir -p /etc/chef/\n",
                                    "\n",
+                                   "# Create Client.rb and json_attributes.json files inside chef directory\n",
                                    "cat <<EOF > /etc/chef/client.rb\n",
                                    "log_level       :info\n",
                                    "log_location    \"/var/log/chef-client.log\"\n",
@@ -190,6 +192,7 @@
                                    "}\n",
                                    "EOF\n",
                                    "\n",
+                                   "# Create Cookbooks directory and clone community cookboss inside that folder\n",
                                    "mkdir /etc/chef/cookbooks/\n",
                                    "cd /etc/chef/cookbooks/\n",
                                    "git clone https://github.com/brint/wordpress-cookbook.git >> /tmp/user.txt\n",
@@ -221,7 +224,7 @@
     "Outputs" : {
           "WebsiteURL" : {
           "Value" : { "Fn::Join" : ["", ["http://", { "Fn::GetAtt" : [ "WebServer", "PublicIp" ]}]]},
-          "Description" : "WordPress website"
+          "Description" : "WordPress website URL"
 }
   }
   }
