@@ -190,13 +190,14 @@
                                    "}\n",
                                    "EOF\n",
                                    "\n",
-
                                    "mkdir /etc/chef/cookbooks/\n",
                                    "cd /etc/chef/cookbooks/\n",
-                                   "git clone https://github.com/brint/wordpress-cookbook.git\n",
-                                   "/usr/bin/berks vendor /etc/chef/cookbooks/\n",
+                                   "git clone https://github.com/brint/wordpress-cookbook.git >> /tmp/user.txt\n",
+                                   "cd /etc/chef/cookbooks/wordpress-cookbook\n",
+                                   "/usr/bin/berks vendor /etc/chef/cookbooks/ > /tmp/berks.txt\n",
+                                   "cd /etc/chef/\n",
                                    "chef-client\n",
-                                   "chmod -R 755 /var/www/wordpress/\n",
+                                   "chmod -R 755 /var/www/wordpress/ >> /tmp/user.txt\n",
                                    "sed -i 's/ServerName/ServerName localhost/g' /etc/apache2/sites-enabled/wordpress.conf\n",
                                    "service apache2 restart\n",
                                    "\n"
